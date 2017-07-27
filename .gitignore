@@ -6,4 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # Bower dependency directory (https://bower.io/)
-bower_components
+src/bower_components
+
+# Node modules directory
+node_modules
+
+# App
+build

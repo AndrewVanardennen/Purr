@@ -1,0 +1,46 @@
+{
+  "name": "purr",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewVanardennen/Purr.git"
+  },
+  "author": "VandeurenGlenn <vandeurenglenn@gmail.com>",
+  "license": "MIT",
+  "backed": {
+    "entry": "index.html",
+    "shell": "src/purr-app.html",
+    "dest": "build/index.html",
+    "sources": [
+      "index.html",
+      "src/**/**"
+    ],
+    "plugins": [
+      "external-images"
+    ],
+    "server": {
+      "demo": "index.html"
+    },
+    "watch": [{
+      "task": "build",
+      "src": [
+        "./src"
+      ],
+      "options": {
+        "presets": "bundle"
+      }
+    }]
+  },
+  "description": "webapp design/code app for the web",
+  "bugs": {
+    "url": "https://github.com/AndrewVanardennen/Purr/issues"
+  },
+  "homepage": "https://github.com/AndrewVanardennen/Purr#readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "webup-plugin-external-images": "^1.0.1"
+  }
+}

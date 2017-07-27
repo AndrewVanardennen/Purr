@@ -1,0 +1,23 @@
+{
+  "name": "purr",
+  "homepage": "https://github.com/AndrewVanardennen/Purr",
+  "authors": [
+    "VandeurenGlenn <vandeurenglenn@gmail.com>",
+    "AndrewVanardennen <Andrew.Vanardennen@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "src/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backed": "^0.6.2",
+    "custom-pages": "^0.1.0",
+    "custom-tabs": "^0.2.2",
+    "custom-router-mixin": "^0.1.0"
+  }
+}

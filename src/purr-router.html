@@ -1,0 +1,34 @@
+<link rel="import" href="bower_components/custom-router-mixin/custom-router-mixin.html">
+
+<template id="purr-router">
+  <style media="screen">
+    :host {
+      display: none;
+    }
+  </style>
+</template>
+
+<script>
+  Backed(class PurrRouter extends CustomRouterMixin {
+    static get properties() {
+      return {
+
+        fallback: {
+          value: 'designer'
+        },
+
+        routes: {
+          value: ['designer', 'editor', 'login', 'settings']
+        },
+
+        hashbang: {
+          value: true
+        }
+      }
+    }
+
+    ready() {
+      super.ready();
+    }
+  })
+</script>

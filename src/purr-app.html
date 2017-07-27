@@ -1,0 +1,71 @@
+<!-- framework -->
+<link rel="import" href="bower_components/backed/backed.html">
+<!-- custom components -->
+<link rel="import" href="custom-header.html">
+<link rel="import" href="custom-drawer.html">
+<link rel="import" href="bower_components/custom-pages/custom-pages.html">
+<link rel="import" href="bower_components/custom-tabs/custom-tabs.html">
+<!-- purr specific components -->
+<link rel="import" href="purr-router.html">
+<link rel="import" href="purr-element-drawer.html">
+<link rel="import" href="purr-tree-drawer.html">
+<link rel="import" href="workspace/purr-designer.html">
+
+
+<template id="purr-app">
+  <style>
+    :host {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+
+      --primary-color: #FFF;
+      --secondary-color: #333;
+
+      --primary-background-color: #888;
+      --secondary-background-color: #EEE;
+
+      --custom-drawer-header-color: var(--primary-color);
+      --custom-drawer-header-background: var(--primary-background-color);
+      --custom-drawer-background: var(--secondary-background-color);
+
+      --custom-header-height: 48px;
+
+      --purr-tree-drawer-width: 256px;
+      --purr-element-drawer-width: 256px;
+    }
+
+    ::slotted(*) {
+      left: var(--purr-tree-drawer-width);
+      right: var(--purr-element-drawer-width);
+      position: absolute;
+      top: var(--custom-header-height);
+      bottom: 0;
+    }
+  </style>
+  <purr-router on-route-change="_onRouteChange"></purr-router>
+
+  <custom-header></custom-header>
+  <purr-element-drawer></purr-element-drawer>
+  <purr-tree-drawer></purr-tree-drawer>
+
+  <!-- pages are dynamically loaded, also they should not be in shadowRoot! -->
+  <slot></slot>
+</template>
+
+<script>
+  Backed(class PurrApp extends HTMLElement {
+    get pages() {
+      return this.querySelector('custom-pages');
+    }
+
+    _onRouteChange({detail}) {
+      console.log(detail);
+      this.pages.select(detail);
+    }
+  });
+</script>

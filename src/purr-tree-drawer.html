@@ -1,0 +1,35 @@
+<link rel="import" href="bower_components/custom-tabs/custom-tabs.html">
+
+<link rel="import" href="custom-drawer.html">
+<link rel="import" href="custom-header.html">
+
+<template id="purr-tree-drawer">
+  <style>
+    custom-header {
+      display: flex;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      align-items: center;
+    }
+    h3 {
+      margin: 0;
+    }
+  </style>
+  <custom-drawer start-open>
+    <custom-header slot="header">
+      <h3>Project</h3>
+    </custom-header>
+    <span slot="content">
+      <custom-tabs attr-for-selected="data-uid" selected="tree">
+        <custom-tab data-uid="tree" slot="tab">tree</custom-tab>
+        <custom-tab data-uid="set" slot="tab">set</custom-tab>
+      </custom-tabs>
+    </span>
+  </custom-drawer>
+</template>
+
+<script>
+  Backed(class PurrTreeDrawer extends HTMLElement {
+
+  })
+</script>

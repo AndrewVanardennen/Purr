@@ -1,0 +1,36 @@
+<link rel="import" href="custom-drawer.html">
+
+<template id="purr-element-drawer">
+  <style media="screen">
+    custom-header {
+      display: flex;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      align-items: center;
+    }
+    h3 {
+      margin: 0;
+    }
+  </style>
+  <custom-drawer start-open right>
+    <custom-header slot="header">
+      <h3>element</h3>
+    </custom-header>
+    <span slot="content">
+      <custom-tabs attr-for-selected="data-uid" selected="properties">
+        <custom-tab data-uid="properties" slot="tab">properties</custom-tab>
+        <custom-tab data-uid="styles" slot="tab">styles</custom-tab>
+      </custom-tabs>
+      <custom-pages attr-for-selected="data-uid" slot="content">
+        <purr-property-inspector data-uid="properties"></purr-property-inspector>
+        <purr-style-inspector data-uid="styles"></purr-style-inspector>
+      </custom-pages>
+    </span>
+  </custom-drawer>
+</template>
+
+<script>
+  Backed(class PurrElementDrawer extends HTMLElement {
+
+  })
+</script>

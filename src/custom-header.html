@@ -1,0 +1,20 @@
+<!-- <link rel="import" href="bower_components/backed/backed.html"> -->
+
+<template id="custom-header">
+  <style>
+    :host {
+      display: block;
+      height: var(--custom-header-height, 48px);
+      background: #888;
+      box-sizing: border-box;
+      width: 100%;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+    }
+  </style>
+  <slot></slot>
+  <slot name="toolbar"></slot>
+</template>
+
+<script>
+  Backed(class CustomHeader extends HTMLElement {});
+</script>
