@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "public": "build/bundled",
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/index.html"
+      }, {
+        "source": "/api",
+        "functions": "api"
+      }
+    ]
+  }
+}

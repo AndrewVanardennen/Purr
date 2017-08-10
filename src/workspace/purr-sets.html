@@ -1,0 +1,27 @@
+<link rel="import" href="purr-set.html">
+
+<template id="purr-sets">
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+  <slot></slot>
+</template>
+
+<script>
+  Backed(class PurrSets extends HTMLElement {
+    newSet(id) {
+      const set = document.createElement('purr-set');
+      set.dataset.setId = id;
+      set.name = id;
+      this.appendChild(set);
+      set.add([id, 'set']);
+      return set;
+    }
+  });
+</script>

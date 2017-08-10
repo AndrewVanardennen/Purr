@@ -1,0 +1,92 @@
+<link rel="import" href="firebase.html">
+
+<!-- <template id="">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <slot></slot>
+</template> -->
+
+<script>
+  Backed(class FirebaseElement extends HTMLElement {
+    static get observedAttributes() {
+      return ['key'];
+    }
+    static get properties() {
+      return {
+        /**
+         * your apiKey
+         */
+        key: {
+          observer: '__update__'
+        }
+      }
+    }
+
+    get auth() {
+      return this.authDomain || this.getAttribute('auth');
+    }
+
+    get database() {
+      return this.databaseURL || this.getAttribute('database');
+    }
+
+    get project() {
+      return this.projectId || this.getAttribute('project');
+    }
+
+    get storage() {
+      return this.storageBucket || this.getAttribute('storage');
+    }
+
+    get messaging() {
+      return this.messagingSenderId || this.getAttribute('messaging');
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      this[name] = newValue;
+    }
+
+    __update__(change) {
+      if (this.key) {
+        const config = {
+          apiKey: this.key,
+          authDomain: this.auth,
+          databaseURL: this.database,
+          projectId: this.project,
+          storageBucket: this.storage,
+          messagingSenderId: this.messaging
+        }
+        firebase.initializeApp(config);
+        firebase.auth().onAuthStateChanged(user => {
+          if (user === null) {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider)
+            firebase.auth().getRedirectResult().then(result => {
+              // This gives you a Google Access Token. You can use it to access the Google API.
+              var token = result.credential.accessToken;
+              // The signed-in user info.
+              var user = result.user;
+              // ...
+            }).catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+            });
+          }
+          this.dispatchEvent(new CustomEvent('auth', {detail: user}));
+        });
+
+      }
+    }
+  });
+</script>

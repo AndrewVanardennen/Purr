@@ -1,0 +1,160 @@
+<link rel="import" href="purr-set-item.html">
+<link rel="import" href="mixins/hover-preview-element-mixin.html">
+
+
+<template id="purr-set">
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 48px;
+      width: 100%;
+      outline: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      cursor: pointer;
+      z-index: 0;
+      line-height: 1;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      -webkit-tap-highlight-color: transparent;
+      opacity: 1;
+      /*transform: scaleY(1);*/
+      transition: height ease-in 320ms;
+    }
+    :host(.folded) {
+      height: 48px;
+      transition: height ease-out 360ms;
+    }
+
+    :host ::slotted(purr-set-item[data-set-id]) {
+      background: rgba(96, 125, 139, 0.8);
+    }
+
+    :host ::slotted(purr-set-item[data-id]) {
+      padding-left: 38px;
+    }
+  </style>
+
+  <!-- <custom-selector attr-for-selected="data-uid" on-custom-selected-change="onCustomSelectedChange"> -->
+    <slot></slot>
+  <!-- </custom-selector> -->
+</template>
+
+<script>
+
+  Backed(class PurrSet extends HoverPreviewElementMixin {
+
+    static get properties() {
+      return {
+        folded: {
+          value: true,
+          observer: 'render'
+        },
+        length: {
+          value: 0
+        }
+      }
+    }
+
+    static get observedAttributes() {
+      return ['name'];
+    }
+
+    get slotItems() {
+      return this.shadowRoot.querySelector('slot').assignedNodes();
+    }
+
+    // set name(value) {
+    //   this.shadowRoot.querySelector('.name').innerHTML = value;
+    // }
+
+    observedAttributes(name, oldValue, newValue) {
+      this[name] = newValue;
+    }
+
+    created() {
+      super.created();
+      // bind methods
+      this._onClick = this._onClick.bind(this);
+      // setup listeners
+      this.addEventListener('click', this._onClick);
+    }
+
+    /**
+     * open and close to get the height
+     */
+    _flip() {
+      return new Promise(resolve => {
+        if (this.folded) {
+          for (const item of this.slotItems) {
+            if (item.dataset.id) {
+              this.classList.remove('folded');
+
+              const height = this.getBoundingClientRect().height;
+              requestAnimationFrame(() => {
+                this.classList.add('folded');
+                resolve(height);
+              })
+            }
+          }
+        } else {
+          resolve();
+        }
+      });
+    }
+
+    _onClick(event) {
+      if (!event.target.hasAttribute('data-set-id')) return;
+      this._flip().then(height => {
+        requestAnimationFrame(() => {
+          if (height) {
+            this.style.transitionDuration = Math.round(height / 48) * 100 + 'ms';
+            this.style.height = height + 'px';
+          } else {
+            this.style.height = null;
+          }
+          this.folded = !this.folded;
+        });
+      });
+    }
+
+    render({value}) {
+      return new Promise(resolve => {
+        for (const item of this.slotItems) {
+          if (item.dataset.id) {
+            if (value) {
+              item.hide(this)
+              this.classList.add('folded');
+            } else {
+              item.show();
+              this.classList.remove('folded');
+            }
+          }
+        }
+        resolve();
+      });
+    }
+
+    add(item) {
+      this.length++;
+      const setItem = document.createElement('purr-set-item');
+      if (item[1] === 'set') {
+        setItem.dataset.setId = item[0];
+      } else {
+        setItem.dataset.id = item[0];
+        setItem.dataset.set = this.dataset.setId;
+        setItem.dataset.index = this.length;
+        this.dataset.length = this.length;
+      }
+      setItem.innerHTML = item[0];
+      if (this.folded && item[1] !== 'set') {
+        setItem.hide(this)
+        this.classList.add('folded');
+      }
+      this.appendChild(setItem);
+    }
+  });
+</script>

@@ -1,0 +1,33 @@
+<link rel="import" href="custom-drag-mixin.html">
+
+<template id="custom-drag">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <slot></slot>
+</template>
+
+<script>
+  Backed(class CustomDrag extends CustomDragMixin {
+    static get properties() {
+      return {
+        name: {
+          value: null,
+          observer: '__nameObserver__'
+        }
+      }
+    }
+
+    // ready() {
+    //   super.ready();
+    // }
+
+    __nameObserver__(change) {
+      console.log(change);
+    }
+  });
+</script>

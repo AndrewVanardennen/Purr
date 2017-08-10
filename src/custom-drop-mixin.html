@@ -1,0 +1,26 @@
+<script>
+  class CustomDropMixin extends HTMLElement {
+    set data(value) {
+      this._data = value;
+    }
+    get data() {
+      return this._data;
+    }
+    ready() {
+      this._onDrop = this._onDrop.bind(this);
+      this._onDragOver = this._onDragOver.bind(this);
+      this.addEventListener('dragover', this._onDragOver)
+      this.addEventListener('drop', this._onDrop)
+    }
+
+    _onDragOver() {
+      event.preventDefault();
+    }
+
+    _onDrop(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+      this.data = JSON.parse(event.dataTransfer.getData('data'));
+    }
+  };
+</script>

@@ -1,0 +1,80 @@
+<template id="hover-preview">
+  <style>
+    :host {
+      display: flex;
+      position: absolute;
+      padding: 12px;
+      background: white;
+      min-width: 320px;
+      min-height: 160px;
+      opacity: 0;
+      transform: scale(0);
+      transition: transform ease-out 180ms, opacity ease-out 120ms;
+      pointer-events: none;
+      user-select: none;
+      /*z-index: 100;*/
+      /* TODO:  add theming so we can provide styles for our dark theme ...  */
+    }
+    :host(.previewing) {
+      opacity: 1;
+      transform: scale(1);
+      transition: transform ease-in 120ms, opacity ease-in 180ms;
+      z-index: 100;
+    }
+  </style>
+  <slot></slot>
+</template>
+<script>
+  Backed(class HoverPreview extends HTMLElement {
+
+  });
+
+  class HoverPreviewElementMixin extends HTMLElement {
+    created() {
+      this._onMouseOver = this._onMouseOver.bind(this);
+      this._onMouseOut = this._onMouseOut.bind(this);
+
+      this.addEventListener('mouseover', this._onMouseOver);
+      this.addEventListener('mouseout', this._onMouseOut);
+      this.addEventListener('mousedown', this._onMouseOut);
+    }
+
+    ready() {
+      this.preview = document.createElement('hover-preview');
+      document.body.appendChild(this.preview);
+    }
+
+    _onMouseOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const target = event.path[0];
+      // perform for set items only
+      const { set, id } = target.dataset;
+      if (target.localName === 'purr-set-item' && id) {
+        const { clientX, clientY } = event;
+        this.timeoutActive = true;
+        this.timeout = setTimeout(() => {
+          this.timeoutActive = false;
+          const { snippet } = Purr.sets[set][id];
+          this.preview.innerHTML = snippet ? snippet : `<${id}></${id}>`;
+          this.preview.style.left = `${clientX}px`;
+          this.preview.style.top = `${clientY}px`;
+          requestAnimationFrame(() => {
+            this.preview.classList.add('previewing');
+          });
+        }, 1200);
+      }
+    }
+
+    _onMouseOut(event) {
+      if (this.timeoutActive) {
+        clearTimeout(this.timeout);
+        this.timeoutActive = false;
+      }
+      requestAnimationFrame(() => {
+        this.preview.classList.remove('previewing');
+      });
+    }
+
+  }
+</script>

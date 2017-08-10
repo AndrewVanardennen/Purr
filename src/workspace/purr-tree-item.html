@@ -1,0 +1,34 @@
+<link rel="import" href="../bower_components/custom-svg-icon/custom-svg-icon.html">
+
+<template id="purr-tree-item">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      color: var(--secondary-color, #555);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .container {
+      padding: 12px;
+      /* disable pointer events so purr-tree-item is returned */
+      pointer-events: none;
+    }
+    custom-svg-icon {
+      padding-right: 6px;
+    }
+  </style>
+  <div class="container">
+    <custom-svg-icon icon="purr-icons::subdirectory-arrow-right"></custom-svg-icon>
+    <slot></slot>
+  </div>
+</template>
+
+<script>
+  Backed(class PurrTreeItem extends HTMLElement {
+    get name() {
+      return this.innerHTML.split('#')[0];
+    }
+  });
+</script>

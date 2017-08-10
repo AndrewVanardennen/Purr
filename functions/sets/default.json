@@ -1,0 +1,46 @@
+[
+  {
+    "name": "custom-header",
+    "base": "src/bower_components/custom-header",
+    "repo": "VandeurenGlenn/custom-header",
+    "snippet": "<custom-header></custom-header>",
+    "category": "ui"
+  }, {
+    "name": "custom-drawer",
+    "base": "src/bower_components/custom-drawer",
+    "repo": "VandeurenGlenn/custom-drawer",
+    "attributes": ["start-open"],
+    "snippet": "<custom-drawer start-open></custom-drawer>",
+    "category": "ui"
+  }, {
+    "name": "custom-pages",
+    "base": "src/bower_components/custom-pages",
+    "repo": "VandeurenGlenn/custom-pages",
+    "category": "ux"
+  }, {
+    "name": "custom-tab",
+    "base": "src/bower_components/custom-tabs",
+    "snippet": "<custom-tab name=\"home\">home</custom-tab>",
+    "repo": "VandeurenGlenn/custom-tabs"
+  }, {
+    "name": "custom-tabs",
+    "repo": "VandeurenGlenn/custom-tabs",
+    "thumbnail": false,
+    "category": "ui",
+    "children": ["custom-tab"],
+    "snippet": "<custom-tabs attr-for-selected=\"name\" select=\"home\"><custom-tab name=\"home\">home</custom-tab><custom-tab name=\"info\">info</custom-tab></custom-tabs>"
+  }, {
+    "name": "svg-iconset",
+    "thumbnail": false,
+    "base": "src/bower_components/svg-iconset",
+    "repo": "VandeurenGlenn/svg-iconset",
+    "snippet": "<svg-iconset name=\"icons\"><svg><defs><g id=\"menu\"><path id=\"menu\" d=\"M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z\"/></g></defs></svg></svg-iconset>",
+    "category": "ui"
+  }, {
+    "name": "custom-svg-icon",
+    "base": "src/bower_components/custom-svg-icon",
+    "repo": "VandeurenGlenn/custom-svg-icon",
+    "snippet": "<custom-svg-icon icon=\"menu\"></custom-svg-icon>",
+    "category": "ui"
+  }
+]

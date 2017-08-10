@@ -15,9 +15,20 @@
     "tests"
   ],
   "dependencies": {
-    "backed": "^0.6.2",
-    "custom-pages": "^0.1.0",
+    "backed": "^0.7.3",
+    "custom-pages": "VandeurenGlenn/custom-pages#^0.1.0",
     "custom-tabs": "^0.2.2",
-    "custom-router-mixin": "^0.1.0"
+    "custom-router-mixin": "^0.1.0",
+    "custom-svg-icon": "^0.5.0",
+    "svg-iconset": "VandeurenGlenn/svg-iconset#^0.4.0",
+    "clarinet": "dscape/clarinet#^0.10.1",
+    "custom-header": "^0.1.0",
+    "custom-drawer": "^0.1.0",
+    "firebase": "^4.2.0",
+    "custom-select-mixins": "^0.2.0"
+  },
+  "resolutions": {
+    "backed": "^0.7.3",
+    "custom-select-mixins": "^0.2.0"
   }
 }

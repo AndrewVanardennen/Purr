@@ -1,0 +1,21 @@
+<script>
+  class CustomDragMixin extends HTMLElement {
+    set draggable(value) {
+      if (value) {
+        this.setAttribute('draggable', true);
+      } else {
+        this.removeAttribute('draggable');
+      }
+    }
+
+    ready() {
+      this.draggable = true;
+      this.addEventListener('dragstart', event => {
+        const { id, set } = event.target.dataset;
+        if (id && set) {
+          event.dataTransfer.setData('data', JSON.stringify({ id, set}));
+        }
+      });
+    }
+  };
+</script>

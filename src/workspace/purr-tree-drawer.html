@@ -1,0 +1,84 @@
+<link rel="import" href="../bower_components/custom-tabs/custom-tabs.html">
+<link rel="import" href="../bower_components/custom-drawer/custom-drawer.html">
+<link rel="import" href="../bower_components/custom-header/custom-header.html">
+
+<link rel="import" href="purr-sets.html">
+<link rel="import" href="purr-tree.html">
+
+
+<template id="purr-tree-drawer">
+  <style>
+    :host {
+      display: block;
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: var(--custom-drawer-width, 256px);
+      color: var(--custom-drawer-color, #333);
+    }
+    custom-drawer.left {
+      left: 0;
+    }
+    custom-drawer.right {
+      right: 0;
+    }
+    custom-header {
+      display: flex;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      align-items: center;
+    }
+    h3 {
+      margin: 0;
+    }
+    custom-pages {
+      overflow-y: auto;
+    }
+    custom-tabs {
+      background: var(--primary-toolbar-background-color);
+      color: #EEE;
+    }
+  </style>
+  <custom-drawer start-open>
+    <custom-header slot="header">
+      <h3>Project</h3>
+    </custom-header>
+    <span slot="content">
+      <custom-tabs attr-for-selected="data-uid" selected="sets" on-selected="_onSelected">
+        <custom-tab data-uid="sets" slot="tab">sets</custom-tab>
+        <custom-tab data-uid="tree" slot="tab">tree</custom-tab>
+      </custom-tabs>
+
+      <custom-pages attr-for-selected="data-uid" selected="sets">
+        <purr-sets data-uid="sets"></purr-sets>
+        <purr-tree data-uid="tree"></purr-tree>
+      </custom-pages>
+    </span>
+  </custom-drawer>
+</template>
+
+<script>
+  Backed(class PurrTreeDrawer extends HTMLElement {
+    get sets() {
+      return this.shadowRoot.querySelector('purr-sets');
+    }
+
+    get tree() {
+      return this.shadowRoot.querySelector('purr-tree');
+    }
+    /**
+     * @param {string|number} id
+     * @param {array} item [name, object]
+     */
+    setUpdate(id, item) {
+      const set = this.sets.querySelector(`purr-set[data-set-id="${id}"]`) ||
+                  this.sets.newSet(id);
+
+      set.add(item);
+    }
+
+    _onSelected(event) {
+      this.shadowRoot.querySelector('custom-pages').select(event.detail)
+    }
+  })
+</script>

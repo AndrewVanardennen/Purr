@@ -13,7 +13,7 @@
     "dest": "build/index.html",
     "sources": [
       "index.html",
-      "src/**/**"
+      "src/!bower_components/**"
     ],
     "plugins": [
       "external-images"
@@ -21,15 +21,17 @@
     "server": {
       "demo": "index.html"
     },
-    "watch": [{
-      "task": "build",
-      "src": [
-        "./src"
-      ],
-      "options": {
-        "presets": "bundle"
+    "watch": [
+      {
+        "task": "build",
+        "src": [
+          "./src"
+        ],
+        "options": {
+          "presets": "bundle"
+        }
       }
-    }]
+    ]
   },
   "description": "webapp design/code app for the web",
   "bugs": {
@@ -38,9 +40,17 @@
   "homepage": "https://github.com/AndrewVanardennen/Purr#readme",
   "main": "index.js",
   "scripts": {
+    "build": "node _build/update-sets.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "browser-window": "^0.4.0",
+    "chalk": "^2.0.1",
+    "clarinet": "^0.11.0",
+    "cors": "^2.8.4",
+    "express": "^4.15.3",
+    "glob-stream": "^6.1.0",
+    "webshot": "^0.18.0",
     "webup-plugin-external-images": "^1.0.1"
   }
 }

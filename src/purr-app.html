@@ -1,16 +1,24 @@
 <!-- framework -->
 <link rel="import" href="bower_components/backed/backed.html">
 <!-- custom components -->
-<link rel="import" href="custom-header.html">
-<link rel="import" href="custom-drawer.html">
+<link rel="import" href="bower_components/custom-header/custom-header.html">
+<link rel="import" href="bower_components/custom-drawer/custom-drawer.html">
 <link rel="import" href="bower_components/custom-pages/custom-pages.html">
 <link rel="import" href="bower_components/custom-tabs/custom-tabs.html">
+<link rel="import" href="bower_components/custom-svg-icon/custom-svg-icon.html">
+<link rel="import" href="bower_components/svg-iconset/svg-iconset.html">
+
 <!-- purr specific components -->
 <link rel="import" href="purr-router.html">
-<link rel="import" href="purr-element-drawer.html">
-<link rel="import" href="purr-tree-drawer.html">
-<link rel="import" href="workspace/purr-designer.html">
+<link rel="import" href="workspace/purr-element-drawer.html">
+<link rel="import" href="workspace/purr-tree-drawer.html">
+<link rel="import" href="workspace/designer-canvas.html">
 
+<link rel="import" href="firebase-element.html">
+<link rel="import" href="fetch-stream.html">
+<script>
+  const functionsURL = 'https://us-central1-purr-f9e5b.cloudfunctions.net';
+</script>
 
 <template id="purr-app">
   <style>
@@ -24,11 +32,14 @@
       overflow: hidden;
 
       --primary-color: #FFF;
-      --secondary-color: #333;
+      --secondary-color: #EEE;
 
-      --primary-background-color: #888;
-      --secondary-background-color: #EEE;
+      --primary-background-color: #46484f;
+      --secondary-background-color: rgba(38, 50, 56, 0.87);
 
+      --primary-toolbar-background-color: rgba(70, 72, 79, 0.82);
+
+      --custom-header-background: var(--primary-background-color);
       --custom-drawer-header-color: var(--primary-color);
       --custom-drawer-header-background: var(--primary-background-color);
       --custom-drawer-background: var(--secondary-background-color);
@@ -37,6 +48,7 @@
 
       --purr-tree-drawer-width: 256px;
       --purr-element-drawer-width: 256px;
+      --purr-workspace-background-color: rgba(38, 50, 56, 0.72)
     }
 
     ::slotted(*) {
@@ -49,23 +61,155 @@
   </style>
   <purr-router on-route-change="_onRouteChange"></purr-router>
 
+  <firebase-element
+    key="AIzaSyDJ9PMbE8UzxwSeBEOw5wUOJcPQLKWNfEY"
+    auth="purr-f9e5b.firebaseapp.com"
+    on-auth="_onAuthStateChanged">
+  </firebase-element>
+
+  <fetch-stream
+    url="http://localhost:5003/purr-f9e5b/us-central1/api/sets"
+    format="json"
+    auto
+    on-update="_onSetStreamUpdate">
+  </fetch-stream>
+
+  <fetch-stream
+    id="user"
+    url="http://localhost:5003/purr-f9e5b/us-central1/api/user/sets"
+    format="json"
+    on-update="_onUserSetStreamUpdate">
+  </fetch-stream>
+
   <custom-header></custom-header>
   <purr-element-drawer></purr-element-drawer>
   <purr-tree-drawer></purr-tree-drawer>
-
-  <!-- pages are dynamically loaded, also they should not be in shadowRoot! -->
+  <svg-iconset name="purr-icons">
+    <svg>
+      <defs>
+        <g id="subdirectory-arrow-right"><path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/></g>
+      </defs>
+    </svg>
+  </svg-iconset>
+  <!-- pages are dynamically loaded, they should not be in shadowRoot! -->
   <slot></slot>
 </template>
 
 <script>
+  window.Purr = window.Purr || {Project: new Map()};
+
   Backed(class PurrApp extends HTMLElement {
+
     get pages() {
       return this.querySelector('custom-pages');
     }
 
+    get designer() {
+      return this.pages.querySelector('designer-canvas');
+    }
+
+    get userSetStream() {
+      return this.shadowRoot.querySelector('fetch-stream[id="user"]')
+    }
+
+    get treeDrawer() {
+      return this.shadowRoot.querySelector('purr-tree-drawer');
+    }
+
+    get elementDrawer() {
+      return this.shadowRoot.querySelector('purr-element-drawer');
+    }
+
+    get userSet() {
+      return Purr.userSet || {};
+    }
+
+    get set() {
+      return Purr.set || {};
+    }
+
+    set userSet(value) {
+      Purr.userSet = value;
+    }
+
+    set set(value) {
+      Purr.set = value;
+    }
+
+    get sets() {
+      return Purr.sets || {};
+    }
+
+    set sets(value) {
+      Purr.sets = value;
+    }
+
+    ready() {
+      this._onCanvasElementLoad = this._onCanvasElementLoad.bind(this);
+      this._onElementFocus = this._onElementFocus.bind(this);
+      document.addEventListener('element-load', this._onCanvasElementLoad);
+      document.addEventListener('element-focus', this._onElementFocus);
+    }
+
+    _onAuthStateChanged({detail}) {
+      // get user sets
+      detail.getIdToken().then(token => {
+        this.userSetStream.headers = {Authorization: `Bearer ${token}`}
+        this.userSetStream.fetch();
+      });
+    }
+
     _onRouteChange({detail}) {
-      console.log(detail);
       this.pages.select(detail);
+    }
+
+    _transformSet(name, item) {
+      const set = this.sets[name] || {};
+      const sets = this.sets;
+      const id = item.name;
+      if (item.children) {
+        for (const child of item.children) {
+          // fetch(`http://localhost:5002/purr-f9e5b/us-central1/api/${name === 'user' ? 'user/' : ''}elementPreview?name=${child}&repo=${encodeURIComponent(item.repo.replace(/(http:\/\/|https:\/\/)/g, ''))}`).then(response => {
+          //   console.log(response);
+          // })
+          this.sets[name][child].repo = item.repo;
+        }
+      }
+      // delete item.name;
+      set[id] = item;
+      sets[name] = set;
+      this.sets = sets;
+      this.treeDrawer.setUpdate(name, [id, item]);
+    }
+
+    _onSetStreamUpdate({detail}) {
+      this._transformSet('default', detail);
+    }
+
+    _onUserSetStreamUpdate({detail}) {
+      this._transformSet('user', detail);
+    }
+
+    _onCanvasElementLoad({ detail }) {
+      const { slotted } = detail;
+      console.log(slotted);
+      this.treeDrawer.tree.add(detail);
+    }
+
+    /**
+     * loads element properties & styles & place outline around element
+     */
+    _onElementFocus({detail}) {
+      if (this.previousSelectedElement) {
+        this.previousSelectedElement.classList.remove('outline');
+      }
+      this.selectedElement = this.designer.querySelector(`${detail.name}[data-uid="${detail.uid}"]`);
+      this.selectedElement.classList.add('outline');
+      // get the element properties & styles from set or read from class/element
+      const {css, properties} = Purr.Project.get(detail.uid);
+      this.elementDrawer.properties = properties || this.toJsProp(detail.name).properties || null;
+      this.elementDrawer.css = css || this.selectedElement.shadowRoot.querySelector('style').innerHTML;
+      this.previousSelectedElement = this.selectedElement;
     }
   });
 </script>

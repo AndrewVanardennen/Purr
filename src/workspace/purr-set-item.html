@@ -1,0 +1,85 @@
+<link rel="import" href="../custom-drag-mixin.html">
+
+<template id="purr-set-item">
+  <style>
+    :host {
+      opacity: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      min-height: 48px;
+      height: 48px;
+      padding: 8px 12px;
+      box-sizing: border-box;
+      transition: transform ease-in 100ms, opacity ease-in 60ms;
+      pointer-events: auto;
+      color: var(--secondary-color);
+      font-weight: 700;
+    }
+    :host(.hidden) {
+      opacity: 0;
+      pointer-events: none;
+      transform: scaleY(0) translate(-100%);
+      transition: transform ease-out 160ms, opacity ease-out 160ms;
+    }
+    :host([data-id]) {
+      cursor: -webkit-grab;
+    }
+    :host(.over) {
+      color: #FFF;
+      background: #78909C;
+    }
+  </style>
+  <svg-icon class="fold-icon" icon=""></svg-icon>
+  <svg-icon class="type-icon" icon=""></svg-icon>
+  <span class="name">
+    <slot></slot>
+  </span>
+</template>
+
+<script>
+  Backed(class PurrSetItem extends CustomDragMixin {
+    static get observedAttributes() {
+      return ['hidden'];
+    }
+    ready() {
+      super.ready();
+      this._parent = this.parentElement;
+      this._onMouseOut = this._onMouseOut.bind(this);
+      this.addEventListener('mouseover', this._onMouseOver)
+      this.addEventListener('mouseout', this._onMouseOut)
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+      this[name] = newValue;
+    }
+    show() {
+      let index = this.dataset.index;
+      if (index > 1) {
+        this.style.transitionDelay = ((index - 1) * 100) + 'ms';
+      } else {
+        this.style.transitionDelay = '0ms';
+      }
+
+      this.classList.remove('hidden');
+    }
+
+    hide(parent) {
+      let index = this.dataset.index;
+      const length = parent.dataset.length;
+      if (index > 0) {
+        this.style.transitionDelay = ((length - index) * 100) + 'ms';
+      } else {
+        this.style.transitionDelay = (length * 100) + 'ms';
+      }
+
+      this.classList.add('hidden');
+    }
+    _onMouseOut () {
+      this.classList.remove('over');
+    }
+    _onMouseOver () {
+      this.classList.add('over');
+    }
+  });
+</script>

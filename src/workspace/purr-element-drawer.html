@@ -1,4 +1,5 @@
-<link rel="import" href="custom-drawer.html">
+<link rel="import" href="../bower_components/custom-drawer/custom-drawer.html">
+<link rel="import" href="../bower_components/custom-header/custom-header.html">
 
 <template id="purr-element-drawer">
   <style media="screen">
@@ -11,13 +12,18 @@
     h3 {
       margin: 0;
     }
+
+    custom-tabs {
+      background: var(--primary-toolbar-background-color);
+      color: #EEE;
+    }
   </style>
   <custom-drawer start-open right>
     <custom-header slot="header">
       <h3>element</h3>
     </custom-header>
     <span slot="content">
-      <custom-tabs attr-for-selected="data-uid" selected="properties">
+      <custom-tabs attr-for-selected="data-uid" selected="properties" on-selected="">
         <custom-tab data-uid="properties" slot="tab">properties</custom-tab>
         <custom-tab data-uid="styles" slot="tab">styles</custom-tab>
       </custom-tabs>

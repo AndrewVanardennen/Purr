@@ -1,0 +1,17 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "dependencies": {
+    "clarinet": "^0.11.0",
+    "cors": "^2.8.4",
+    "download": "^6.2.5",
+    "express": "^4.15.3",
+    "firebase": "^4.2.0",
+    "firebase-admin": "~4.2.1",
+    "firebase-functions": "^0.5.7",
+    "glob-stream": "^6.1.0",
+    "merge-stream": "^1.0.1",
+    "webshot": "^0.18.0"
+  },
+  "private": true
+}

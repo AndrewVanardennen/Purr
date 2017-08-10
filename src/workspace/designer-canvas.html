@@ -1,0 +1,136 @@
+<link rel="import" href="../custom-drop-mixin.html">
+
+<template id="designer-canvas">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--purr-workspace-background-color);
+      background-image: url('/src/sources/grid.png');
+      pointer-events: none;
+    }
+
+    *[draggable="true"] custom-drag {
+      pointer-events: auto;
+    }
+
+    ::slotted(.outline) {
+      border: var(--primary-color, #FFF) 1px solid;
+    }
+  </style>
+  <slot></slot>
+</template>
+
+<script>
+  Backed(class DesignerCanvas extends CustomDropMixin {
+    static get properties() {
+      return {
+        loadedSet: {
+          value: new Map()
+        }
+      }
+    }
+    _shouldImport(is) {
+      return !window[is] || registeredElements.indexOf(is) === -1;
+    }
+    get slotted() {
+      const slotted = this.shadowRoot.querySelector('slot').assignedNodes();
+      for (const node of slotted) {
+        // remove the element, when not having nodeType 1
+        if (node.nodeType !== 1) slotted.splice(slotted.indexOf(node), 1);
+      }
+      return slotted;
+    }
+    createGuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const random = Math.random()*16|0;
+        const v = c === 'x' ? random : (random&0x3|0x8);
+        return v.toString(16);
+      });
+    }
+    /**
+     * workaround attributes not set due to outerHTML change.
+     */
+    _flipElement(element, snippet) {
+      return new Promise((resolve, reject) => {
+        // 1 => render in document
+        document.body.appendChild(element);
+        // 2 => set outerHTML
+        element.outerHTML = snippet;
+        //  3 => remove element from document
+        requestAnimationFrame(() => {
+          const el = document.querySelector(element.localName);
+          const clone = el.cloneNode(true);
+          document.body.removeChild(el);
+          resolve(clone);
+        })
+      });
+    }
+    _load(target, set, is) {
+      const { snippet } = Purr.sets[set][is];
+      const Guid = this.createGuid();
+      const loaded = this.loadedSet.has(is);
+      const element = loaded ? this.loadedSet.get(is) : document.createElement(is);
+      // don't append & remove when already in loadedSet
+      if (snippet && !loaded) {
+        // renders element in the document & returns a deep clone
+        this._flipElement(element, snippet).then(element => {
+          element.dataset.uid = Guid;
+          requestAnimationFrame(() => {
+            target.appendChild(element);
+          });
+          this.loadedSet.set(is, element);
+        });
+      } else if (snippet && loaded) {
+        const clone = element.cloneNode(true);
+        element.dataset.uid = Guid;
+        requestAnimationFrame(() => {
+          target.appendChild(clone);
+        });
+        this.loadedSet.set(is, clone);
+      } else {
+        element.dataset.uid = Guid;
+        requestAnimationFrame(() => {
+          target.appendChild(element);
+        });
+        this.loadedSet.set(is, element);
+        console.warn('no snippet found for:', is, 'in', set, 'set.');
+      }
+
+
+      // each element gets an uid for ease of access ...
+      const { uid } = target.dataset || {uid: null};
+      if (Purr.Project.size > 0) {
+        Purr.Project.set(Guid, {parent: uid, is});
+      } else {
+        // top level off the tree
+        Purr.Project.set(Guid, {is, node: element});
+      }
+      this.fireEvent('element-load', {uid: Guid, name: is, slotted: this.slotted});
+    }
+    _onDrop(event) {
+      // run default drop mixin behavior
+      super._onDrop(event);
+      const target = event.path[0];
+      const { set, id } = this.data;
+      // TODO: download and store user elements in user set (firebase).
+      if (this._shouldImport(id)) {
+        // import the element
+        this.importHref(target, set, id);
+      } else {
+        this._load(target, set, id);
+      }
+    }
+
+    importHref(target, set, id) {
+      const { base } = Purr.sets[set][id]; // folder
+      const link = document.createElement('link');
+      link.rel = 'import';
+      link.href = `${base}/${id}.html`;
+      link.onload = this._load(target, set, id);
+      link.onerror = error => console.warn(error);
+      document.head.appendChild(link);
+    }
+  })
+</script>
